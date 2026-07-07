@@ -185,7 +185,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   /* Security middleware */
   app.use(helmet.noSniff())
   app.use(helmet.frameguard())
-  // app.use(helmet.xssFilter()); // = no protection from persisted XSS via RESTful API
+  app.use(helmet.xssFilter());
   app.disable('x-powered-by')
   app.use(featurePolicy({
     features: {
