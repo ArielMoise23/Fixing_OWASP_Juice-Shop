@@ -183,10 +183,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.use(cors())
 
   /* Security middleware */
-  app.use(helmet.noSniff())
-  app.use(helmet.frameguard())
-  app.use(helmet.xssFilter());
-  app.disable('x-powered-by')
+  app.use(helmet())
   app.use(featurePolicy({
     features: {
       payment: ["'self'"]
