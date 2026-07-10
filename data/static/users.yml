@@ -28,7 +28,7 @@
       expYear: 2086
 -
   email: jim
-  password: 'ncc-1701'
+  password: '123456'
   key: jim
   role: 'customer'
   walletBalance: 100
@@ -175,7 +175,7 @@
     answer: 'West-2082' # http://www.alte-postleitzahlen.de/uetersen
 -
   email: bjoern@owasp.org
-  password: 'kitten lesser pooch karate buffoon indoors'
+  password: '123456'
   customDomain: true
   key: bjoernOwasp
   role: 'deluxe'
