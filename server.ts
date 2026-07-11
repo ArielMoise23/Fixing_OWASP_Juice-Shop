@@ -499,6 +499,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
       model,
       endpoints: [`/api/${name}s`, `/api/${name}s/:id`],
       excludeAttributes: exclude,
+      readOnlyAttributes: name === 'User' ? ['role'] : [],
       pagination: false,
       include
     })
