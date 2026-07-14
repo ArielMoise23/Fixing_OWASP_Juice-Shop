@@ -362,11 +362,10 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
     .get(security.isAuthorized())
     .put(security.denyAll())
     .delete(security.denyAll())
-  /* Products: Only GET is allowed in order to view products */ // vuln-code-snippet neutral-line changeProductChallenge
-  app.post('/api/Products', security.isAuthorized()) // vuln-code-snippet neutral-line changeProductChallenge
-  // app.put('/api/Products/:id', security.isAuthorized()) // vuln-code-snippet vuln-line changeProductChallenge
-  app.delete('/api/Products/:id', security.denyAll())
-  /* Challenges: GET list of challenges allowed. Everything else forbidden entirely */
+  /* Products: Only GET is allowed in order to view products */ 
+  app.post('/api/Products', security.isAuthorized()) 
+  app.put('/api/Products/:id', security.isAdmin())
+  app.delete('/api/Products/:id', security.denyAll())  /* Challenges: GET list of challenges allowed. Everything else forbidden entirely */
   app.post('/api/Challenges', security.denyAll())
   app.use('/api/Challenges/:id', security.denyAll())
   /* Hints: GET and PUT hints allowed. Everything else forbidden */
