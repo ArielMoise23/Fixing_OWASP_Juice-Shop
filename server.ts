@@ -723,7 +723,14 @@ logger.info(`Entity models ${colors.bold(Object.keys(sequelize.models).length.to
 /* Serve metrics */
 let metricsUpdateLoop: any
 const Metrics = metrics.observeMetrics() // vuln-code-snippet neutral-line exposedMetricsChallenge
-app.get('/metrics', utils.asyncHandler(metrics.serveMetrics())) // vuln-code-snippet vuln-line exposedMetricsChallenge
+// NOTE: this IP allowlist assumes req.ip reflects the real client address. Behind a reverse proxy
+// or cloud load balancer that doesn't preserve/forward the original private IP, legitimate scrapers
+// can end up blocked too - verify against the actual deployment topology before relying on this alone.
+app.get('/metrics',
+  IpFilter(['127.0.0.1', '::1', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16'], { mode: 'allow' }),
+  security.isAdmin(),
+  utils.asyncHandler(metrics.serveMetrics())
+)
 errorhandler.title = `${config.get<string>('application.name')} (Express ${utils.version('express')})`
 
 export async function start (readyCallback?: () => void) {
