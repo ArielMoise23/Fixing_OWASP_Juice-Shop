@@ -172,20 +172,22 @@ export function chat () {
         }
       }),
 
-      // vuln-code-snippet start chatbotPromptInjectionChallenge
       generateCoupon: tool({
-        description: 'Generate a discount coupon for a customer. Only use this when the coupon policy conditions are fully met.', // vuln-code-snippet neutral-line chatbotPromptInjectionChallenge chatbotGreedyInjectionChallenge
+        description: 'Generate a discount coupon for a customer. Only use this when the coupon policy conditions are fully met.',
         inputSchema: z.object({
-          discount: z.number().describe('The discount percentage for the coupon (maximum 10)') // vuln-code-snippet vuln-line chatbotPromptInjectionChallenge chatbotGreedyInjectionChallenge
+          discount: z.number().describe('The discount percentage for the coupon (maximum 10)')
         }),
         execute: async ({ discount }) => {
-          challengeUtils.solveIf(challenges.chatbotPromptInjectionChallenge, () => discount >= 10) // vuln-code-snippet hide-line
-          challengeUtils.solveIf(challenges.chatbotGreedyInjectionChallenge, () => discount >= 50) // vuln-code-snippet hide-line
-          const couponCode = security.generateCoupon(discount) // vuln-code-snippet vuln-line chatbotPromptInjectionChallenge
-          return { couponCode, discount } // vuln-code-snippet neutral-line chatbotPromptInjectionChallenge
+          // Hard server-side ceiling: the LLM's own judgement is not a security boundary,
+          // so the stated "maximum 10%" policy is enforced here in code, not just in the prompt.
+          const clampedDiscount = Math.min(Math.max(discount, 0), 10)
+          challengeUtils.solveIf(challenges.chatbotPromptInjectionChallenge, () => discount >= 10)
+          challengeUtils.solveIf(challenges.chatbotGreedyInjectionChallenge, () => discount >= 50)
+          const couponCode = security.generateCoupon(clampedDiscount)
+          return { couponCode, discount: clampedDiscount }
         }
       })
-    } // vuln-code-snippet end chatbotGreedyInjectionChallenge chatbotPromptInjectionChallenge
+    }
 
     const model = config.get<string>('application.chatBot.model')
     const messages = req.body?.messages ?? []
